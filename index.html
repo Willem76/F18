@@ -3,7 +3,10 @@
 <head>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>F18</title>
+
 <style>
 html, body {
   margin: 0;
@@ -18,27 +21,52 @@ html, body {
 .container {
   display: flex;
   flex-direction: column;
-  justify-content: center;   /* verticaal centreren */
-  align-items: center;       /* horizontaal centreren */
+  justify-content: center;
+  align-items: center;
   height: 100%;
   width: 100%;
 }
 
 .big {
-  font-size: 12vw;   /* schaalt met schermbreedte */
+  font-size: 12vw;
   font-weight: bold;
-}
-
-.medium {
-  font-size: 6vw;
 }
 </style>
 </head>
+
 <body>
   <div class="container">
-    <div class="big">6.2 kn</div>
-    <div class="big">COG: 235°</div>
-    <div class="big">Diepte: 9,8 m</div>
+    <div id="speed" class="big">--.- kn</div>
+    <div id="cog" class="big">COG: ---°</div>
+    <div id="depth" class="big">Diepte: --- m</div>
   </div>
+
+<script>
+const URL = "http://192.168.0.175:522251/data.json"; // <-- HIER jouw iPhone IP
+
+function updateData() {
+  fetch(URL)
+    .then(response => response.json())
+    .then(data => {
+
+      // Pas dit aan aan je echte JSON structuur!
+      let speed = data.speed || 0;
+      let cog = data.cog || 0;
+      let depth = data.depth || 0;
+
+      document.getElementById("speed").innerText = speed.toFixed(1) + " kn";
+      document.getElementById("cog").innerText = "COG: " + Math.round(cog) + "°";
+      document.getElementById("depth").innerText = "Diepte: " + depth.toFixed(1) + " m";
+
+    })
+    .catch(err => {
+      console.log("Geen data", err);
+    });
+}
+
+// elke seconde verversen
+setInterval(updateData, 1000);
+</script>
+
 </body>
 </html>
